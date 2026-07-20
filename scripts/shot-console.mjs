@@ -1,0 +1,10 @@
+import { chromium } from "playwright";
+const BASE = "http://localhost:3000";
+const b = await chromium.launch();
+const p = await b.newContext({ viewport: { width: 1200, height: 1000 } }).then(c => c.newPage());
+const pid = (await (await p.request.get(`${BASE}/api/projects`)).json()).projects?.[0]?.id;
+await p.goto(`${BASE}/projects/${pid}`, { waitUntil: "networkidle" });
+await p.waitForTimeout(2500);
+await p.screenshot({ path: "/tmp/shots/console-chats.png", fullPage: true });
+await b.close();
+console.log("shot done");
